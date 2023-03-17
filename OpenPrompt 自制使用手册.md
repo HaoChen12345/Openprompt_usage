@@ -76,11 +76,39 @@ Base Class部分给出的是prompt learning架构的基础。
 
 ##### ②`Verbalizer`
 
-
+父类：`torch.nn`
 
 #### 2.3 Pipeline Base
 
 ##### ①`PromptDataLoader`
+
+**作用：**将用于prompt model的数据集进行一个包装
+
+**1）初始化参数**
+
+| 名称        | 解释说明                                                  |
+| ----------- | --------------------------------------------------------- |
+| tokenizer   | 将单词转化成token的工具，常常从预训练语言模型里面load出来 |
+| classes     | 存储输入数据的类别                                        |
+| num_classes | 存储输入数据的类别数                                      |
+
+**2）类内函数**
+
+| 名称                            | 解释说明                                                     |
+| ------------------------------- | ------------------------------------------------------------ |
+| **label_words**                 | label words表示被特定的标签所投影到的词语集合。<br />如：positive$\rightarrow${wonderful,good},那么wonderful和good就是label words<br />做成了@property,在设置后自动调用函数**on_label_words_set()** |
+| **generate_parameters()**       |                                                              |
+| **register_calibrate_logits()** |                                                              |
+| **process_outputs()**           | 默认情况下，verbalizer的输出就是预训练语言模型的输出。根据不同继承的子类，再编写不同的得到输出的方式 |
+| **gather_outputs()**            |                                                              |
+| **aggregate**                   |                                                              |
+| **normalize**                   |                                                              |
+| **project**                     |                                                              |
+| **handle_multi_token**          |                                                              |
+| **from_config**                 |                                                              |
+| **from_file**                   | 从verbalizer文本文件中对类对象进行一个初始化                 |
+
+
 
 ##### ②`PromptModel`
 
@@ -118,13 +146,23 @@ Base Class部分给出的是prompt learning架构的基础。
 
 **1）初始化参数**
 
-| 名称 | 解释说明 |
-| ---- | -------- |
-|      |          |
-|      |          |
-|      |          |
+| 名称          | 解释说明                                                     |
+| ------------- | ------------------------------------------------------------ |
+| plm           | **自行传入**，为`PretrainedModel`类，为在transformers库中选择的预训练模型 |
+| template      | **自行传入**，为`Template`类，是prompt模型当中预先设置的模板 |
+| verbalizer    | **自行传入**，为`Verbalizer`类，用于作输出label words到label的映射 |
+| freeze_plm    | 表示是否冻结预训练语言模型的所有参数，默认为False            |
+| plm_eval_mode | 更强力的freeze，会将dropout一起冻结，默认为False             |
 
-啥时睡
+**2）类内函数**
+
+| 名称                  | 解释说明                                                     |
+| --------------------- | ------------------------------------------------------------ |
+| **\_init\_()**        | 利用传入的参数进行赋值，如使用plm和template定义一个`PromptModel`<br />随后比prompt模型多添置一个Verbalizer，用于标签转化 |
+| **extract_at_mask()** | **参数**：①outputs（`torch.Tensor`）：为初始的输出（可能来自于Verbalizer)<br />②batch(Union[`Dict`,`InputFeatures`])：为初始的batch<br />**返回**：outputs，为所有mask token的输出<br />**说明**：主要用于将Verbalizer的输出分析称mask token的输出，作为一种方法用于前向传播函数当中 |
+| **forward()**         | 主要过程是将batch喂给预训练语言模型，随后将模型的输出喂给verbalizer,最后将verbalizer的输出分析成每个词语的输出（前向传播） |
+
+
 
 ##### ④`PromptForGeneration`
 
