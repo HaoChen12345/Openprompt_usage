@@ -78,11 +78,7 @@ Base Class部分给出的是prompt learning架构的基础。
 
 父类：`torch.nn`
 
-#### 2.3 Pipeline Base
-
-##### ①`PromptDataLoader`
-
-**作用：**将用于prompt model的数据集进行一个包装
+**作用：**完成模型输出词语到对应的类别之间的映射。
 
 **1）初始化参数**
 
@@ -107,6 +103,14 @@ Base Class部分给出的是prompt learning架构的基础。
 | **handle_multi_token**          |                                                              |
 | **from_config**                 |                                                              |
 | **from_file**                   | 从verbalizer文本文件中对类对象进行一个初始化                 |
+
+
+
+#### 2.3 Pipeline Base
+
+##### ①`PromptDataLoader`
+
+**作用**：将用于prompt model的数据集进行一个包装
 
 
 
@@ -170,7 +174,7 @@ Base Class部分给出的是prompt learning架构的基础。
 
 ### 3.Template
 
-**简介：**模板是prompt-learning中最重要的模块之一，它将原始的输入进行封装和处理
+**简介**：模板是prompt-learning中最重要的模块之一，它将原始的输入进行封装和处理
 
 #### 3.1 Manual Template
 
@@ -199,7 +203,9 @@ Base Class部分给出的是prompt learning架构的基础。
 
 
 
-##### ②`PrefixTuningTemplate`
+#### 3.2 Prefix Template
+
+##### ①`PrefixTuningTemplate`
 
 **父类：**`Template`   ([链接](#####①`Template`))
 
@@ -239,3 +245,65 @@ Base Class部分给出的是prompt learning架构的基础。
 | **modify_plm**                    | （仅当T5模型的时候要modify）                                 |
 
 (未整理完毕)
+
+
+
+#### 3.3 Ptuning Template
+
+##### ①`PtuningTemplate`
+
+
+
+#### 3.4 PTR Template
+
+##### ①`PTRTemplate`
+
+
+
+#### 3.5 Mixed Template
+
+##### ①`MixedTemplate`
+
+
+
+### 4. Verbalizer
+
+#### 4.1 One to One Verbalizer
+
+##### ①`One2oneVerbalizer`
+
+
+
+#### 4.2 Manual Verbalizer
+
+##### ①`ManualVerbalizer`
+
+
+
+#### 4.3 Automatic Verbalizer
+
+##### ①`AutomaticVerbalizer`
+
+
+
+#### 4.4 Knowledgeable Verbalizer
+
+##### ①`KnowledgeableVerbalizer`
+
+
+
+#### 4.5 PTR Verbalizer
+
+##### ① `PTRVerbalizer`
+
+
+
+#### 4.6 Generation Verbalizer
+
+##### ①`GenerationVerbalizer`
+
+
+
+#### 4.7 Soft Verbalizer
+
+##### ① `SoftVerbalizer`
