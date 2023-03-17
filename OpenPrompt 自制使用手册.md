@@ -214,7 +214,6 @@ Base Class部分给出的是prompt learning架构的基础。
 **参考文献：**[Prefix-Tuning: Optimizing Continuous Prompts for Generation](https://arxiv.org/abs/2101.00190)
 
 ![1](image/1.png)
-
 **1）初始化参数**
 
 | 名称                          | 解释说明                                                     |
