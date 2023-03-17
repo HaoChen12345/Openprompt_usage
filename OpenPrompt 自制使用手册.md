@@ -207,11 +207,11 @@ Base Class部分给出的是prompt learning架构的基础。
 
 ##### ①`PrefixTuningTemplate`
 
-**父类：**`Template`   ([链接](#####①`Template`))
+**父类**：`Template`   ([链接](#####①`Template`))
 
-**作用：**实现了prefix-tuning方法中的模板编写。
+**作用**：实现了prefix-tuning方法中的模板编写。
 
-**参考文献：**[Prefix-Tuning: Optimizing Continuous Prompts for Generation](https://arxiv.org/abs/2101.00190)
+**参考文献**：[Prefix-Tuning: Optimizing Continuous Prompts for Generation](https://arxiv.org/abs/2101.00190)
 
 我的图片
 ![1](image/1.png)
