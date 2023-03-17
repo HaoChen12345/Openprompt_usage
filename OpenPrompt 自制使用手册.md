@@ -195,3 +195,5 @@ Base Class部分给出的是prompt learning架构的基础。
 | **modify_plm**                    | （仅当T5模型的时候要modify）                                 |
 
 (未整理完毕)
+
+牛逼你要比！
