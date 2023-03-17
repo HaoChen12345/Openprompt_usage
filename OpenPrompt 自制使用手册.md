@@ -270,9 +270,41 @@ Base Class部分给出的是prompt learning架构的基础。
 
 ### 4. Verbalizer
 
+**简介**：verbalizer是prompt-learning当中非常重要的一个组成部分，负责将原始的label投影到单词上
+
 #### 4.1 One to One Verbalizer
 
 ##### ①`One2oneVerbalizer`
+
+**父类**：`Verbalizer`
+
+**作用**：实现了最基本的单个单词到类别映射的Verbalizer
+
+**1）初始化参数**
+
+| 名称                | 解释说明                                                     |
+| ------------------- | ------------------------------------------------------------ |
+| tokenizer           | 来源于预训练语言模型，用于将词表中的词转化为token            |
+| classes             | 存放当前任务的类别标签。例子：Agnews中的['World', 'Sports', 'Business', 'Tech'] |
+| num_classes         | 类别的总数目                                                 |
+| label_words         | 标签词，和类别一一对应                                       |
+| prefix              | 前缀词（用在对前缀敏感的预训练语言模型中，如Reberta)         |
+| multi_token_handler |                                                              |
+| post_log_softmax    | 是否将对数softmax传递给label的概率，默认情况下为True(传)     |
+
+**2）类内函数**
+
+| 名称                     | 解释说明                                                     |
+| ------------------------ | ------------------------------------------------------------ |
+| **on_label_words_set()** | 将传进来的label_words通过**add_prefix()**方法加上对应的prefix<br />并调用**generate_parameters()**生成参数 |
+| **add_prefix**           |                                                              |
+| **generate_parameters**  |                                                              |
+| **project**              |                                                              |
+| **process_logits**       |                                                              |
+| **normalize**            |                                                              |
+| **calibrate**            |                                                              |
+
+(尚未整理完毕，仔细查看源码后再编写，或可以根据研究进度，此块内容先放一放)
 
 
 
@@ -280,17 +312,76 @@ Base Class部分给出的是prompt learning架构的基础。
 
 ##### ①`ManualVerbalizer`
 
+**父类**：`Verbalizer`
+
+**作用**：实现了最基本的人工制定的Verbalizer类。
+
+**1）初始化参数**
+
+| 名称                | 解释说明                                                     |
+| ------------------- | ------------------------------------------------------------ |
+| tokenizer           | 来源于预训练语言模型，用于将词表中的词转化为token            |
+| classes             | 存放当前任务的类别标签。例子：Agnews中的['World', 'Sports', 'Business', 'Tech'] |
+| label_words         | 被标签投影的单词                                             |
+| prefix              | 前缀词（用在对前缀敏感的预训练语言模型中，如Reberta)         |
+| multi_token_handler |                                                              |
+| post_log_softmax    | 是否将对数softmax传递给label的概率，默认情况下为True(传)     |
+
+**2）类内函数**
+
+| 名称                      | 解释说明                                                     |
+| ------------------------- | ------------------------------------------------------------ |
+| **on_label_words_set()**  | 将传进来的label_words通过**add_prefix()**方法加上对应的prefix<br />并调用**generate_parameters()**生成参数 |
+| **add_prefix(·)**         | **参数**：①label_words；②prefix<br />**返回**：new_label_words<br />**说明**：将prefix 拼接在label_words的前面 |
+| **generate_parameters()** | 对self.label_words进行编码，生成三个编码矩阵：<br />①label_words_ids——每个类别词，都用一个二维矩阵表示，存储为三维矩阵<br />②words_ids_mask——也是对应类别词语的<br />③label_words_mask——留空，弄懂了补回来 |
+| **project()**             | 返回每个label对应的可能性，                                  |
+| **process_logits**()      | 返回最终每个类的logits                                       |
+| **normalize**             | 正则化                                                       |
+| **calibrate**             | 校准                                                         |
+
 
 
 #### 4.3 Automatic Verbalizer
 
 ##### ①`AutomaticVerbalizer`
 
-
+**参考文献**： [Automatically Identifying Words That Can Serve as Labels for Few-Shot Text Classification](https://aclanthology.org/2020.coling-main.488.pdf).
 
 #### 4.4 Knowledgeable Verbalizer
 
 ##### ①`KnowledgeableVerbalizer`
+
+**父类**：`ManualVerbalizer`
+
+**作用**：实现了Knowledgeable Prompt Tuning的模板编写。这个Verbalizer的特点是应用了外部知识
+
+**参考文献**：[Knowledgeable Prompt-tuning: Incorporating Knowledge into Prompt Verbalizer for Text Classification](https://arxiv.org/pdf/2108.02035.pdf).
+
+![2](image/2.png)
+
+注：KPT的特点是运用外部知识，扩充Label Words的范围，充分利用了预训练语言模型的潜能。在前向传播的过程中，预训练语言模型给出词表中填入MASK部分的一个概率，通过KPT，将这个概率分布转化为不同类别的概率，选取最大者作为最终的分类。
+
+**1）初始化参数**
+
+| 名称                | 解释说明                                                     |
+| ------------------- | ------------------------------------------------------------ |
+| tokenizer           | 来源于预训练语言模型，用于将词表中的词转化为token            |
+| classes             | 存放当前任务的类别标签。例子：Agnews中的['World', 'Sports', 'Business', 'Tech'] |
+| prefix              | 前缀词（用在对前缀敏感的预训练语言模型中，如Reberta)         |
+| multi_token_handler |                                                              |
+| max_token_split     |                                                              |
+| verbalizer_lr       | Verbalizer优化的学习率                                       |
+| candidate_frac      |                                                              |
+
+**2）类内函数**
+
+| 名称                            | 解释说明                                                     |
+| ------------------------------- | ------------------------------------------------------------ |
+| **on_label_words_set()**        | 传入label words后自动调用。<br />调用类中**delete_common_words()**用于删除不合要求的词语（删除方式参考论文）；**add_prefix()**用于添置一个前缀；**generate_parameters()**用于生成参数。 |
+| **generate_parameters()**       | 编码操作，将外部单词扩充进入label_words()的群体当中          |
+| **register_calibrate_logits()** |                                                              |
+| **project()**                   |                                                              |
+| **aggregate()**                 |                                                              |
 
 
 
@@ -310,4 +401,3 @@ Base Class部分给出的是prompt learning架构的基础。
 
 ##### ① `SoftVerbalizer`
 
-add something
