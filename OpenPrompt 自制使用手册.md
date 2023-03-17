@@ -78,7 +78,7 @@ Base Class部分给出的是prompt learning架构的基础。
 
 父类：`torch.nn`
 
-**作用：**完成模型输出词语到对应的类别之间的映射。
+**作用**：完成模型输出词语到对应的类别之间的映射。
 
 **1）初始化参数**
 
@@ -213,7 +213,10 @@ Base Class部分给出的是prompt learning架构的基础。
 
 **参考文献：**[Prefix-Tuning: Optimizing Continuous Prompts for Generation](https://arxiv.org/abs/2101.00190)
 
+我的图片
 ![1](image/1.png)
+
+
 **1）初始化参数**
 
 | 名称                          | 解释说明                                                     |
