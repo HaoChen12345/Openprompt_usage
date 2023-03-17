@@ -4,11 +4,11 @@
 
 ### 1.参考文献及使用文档
 
-**文献：**OpenPrompt: An Open-source Framework for Prompt-learning
+**文献**：OpenPrompt: An Open-source Framework for Prompt-learning
 
-**文献链接：**https://arxiv.org/abs/2111.01998
+**文献链接**：https://arxiv.org/abs/2111.01998
 
-**文档网址：**https://thunlp.github.io/OpenPrompt/index.html
+**文档网址**：https://thunlp.github.io/OpenPrompt/index.html
 
 ### 2. Base Class
 
@@ -60,16 +60,16 @@ Base Class部分给出的是prompt learning架构的基础。
 | **get_default_loss_ids()**        | **返回**：List<br />**说明**：这个List标识出模板中哪个位置的token被掩盖掉。<br />列表中取值为0和1，0表示正常的序列token，1表示masked token |
 | **get_default_shortenable_ids()** | **返回**：List<br />**说明**：为了适应模型的max_sequence_length，模板中也要有可伸缩的token。<br />默认情况下，input text是可伸缩的，而剩余部分需要保持固定。<br />所以列表中，1表示input tokens，0表示template sequence token。 |
 | **get_default_soft_token_ids()**  | **返回**：List<br />**说明**：辨别哪些token是soft token，一般由子类接续编写。 |
-| **incorporate_text_example(·)**   | **参数：**①example：类型为`InputExample`<br />②text：输入文本，默认为None<br />**返回**：text<br />**说明：**用于将`InputExample`和模板的text进行合并操作，统一为text的形式 |
-| **_check_template_format()**      | **说明：**检查template的格式是否正确，主要判断mask tokens的个数是否为0。 |
-| **parse_text(·)**                 | **参数：**①text：输入文本<br />**返回**：List。名称为parsed，存放将text语法分析的结果<br />**说明**：对文本进行语法分析 |
+| **incorporate_text_example(·)**   | **参数**：①example：类型为`InputExample`<br />②text：输入文本，默认为None<br />**返回**：text<br />**说明**：用于将`InputExample`和模板的text进行合并操作，统一为text的形式 |
+| **_check_template_format()**      | **说明**：检查template的格式是否正确，主要判断mask tokens的个数是否为0。 |
+| **parse_text(·)**                 | **参数**：①text：输入文本<br />**返回**：List。名称为parsed，存放将text语法分析的结果<br />**说明**：对文本进行语法分析 |
 | **wrap_one_example(·)**           | **参数：**①example：类型为`InputExample`<br />**返回**：List[Dict]，将模板文本中的每一个token都转化成字典表示<br />示例：[{"loss_ids": 0, "text": "It was"}, {"loss_ids": 1, "text": "\<mask\>"}, ] |
 | **process_batch**                 | 用于对batch操作的一个方法，需要用到的时候由子类完成续写      |
 | **post_processing_outputs()**     | **参数**：①outputs<br />**返回**：outputs<br />**说明**：根据模板的需要对语言模型的输出进行后处理，由子类完成续写。 |
-| **save(·)**                       | **参数**：path<br />**说明：**根据指定的路径保存`Template`   |
+| **save(·)**                       | **参数**：path<br />**说明**：根据指定的路径保存`Template`   |
 | **text**                          | 写作property，对文本赋值进行一些安全性的检查和设置           |
 | **on_text_set**                   | 若在template文本被设置的同时需要完成操作，在子类中写这个函数 |
-| **from_file(·)**                  | **参数：**①path:原始文本文件对应的路径<br />②choice：`int`型，默认为0，表示读第几行<br />**说明：**将文本文档中的内容读入，并存放到类中的text当中。 |
+| **from_file(·)**                  | **参数**：①path:原始文本文件对应的路径<br />②choice：`int`型，默认为0，表示读第几行<br />**说明**：将文本文档中的内容读入，并存放到类中的text当中。 |
 | **from_config(·）**               | 从configuration node中加载一个template                       |
 
 
@@ -108,7 +108,7 @@ Base Class部分给出的是prompt learning架构的基础。
 | ------------------------------ | ------------------------------------------------------------ |
 | **\_init\_()**                 | 初始化赋值，获取预训练语言模型的参数。随后执行**_prepare_main_input_name()** |
 | **_prepare_main_input_name()** | 对类内变量main_input_name根据不同情况进行赋值                |
-| **forward()**                  | **参数：**①batch，为 **Union**[Dict, InputFeatures]<br />**返回：**`torch.Tensor`<br />**说明：**从模板中提取出input batch，随后喂给plm得到output，并将output交由Template处理过一次后返回最终的output。<br />（forward函数制定前向传播的规则，用于预测mask tokens的值） |
+| **forward()**                  | **参数**：①batch，为 **Union**[Dict, InputFeatures]<br />**返回**：`torch.Tensor`<br />**说明**：从模板中提取出input batch，随后喂给plm得到output，并将output交由Template处理过一次后返回最终的output。<br />（forward函数制定前向传播的规则，用于预测mask tokens的值） |
 
 ##### ③`PromptForClassification`
 
@@ -117,6 +117,12 @@ Base Class部分给出的是prompt learning架构的基础。
 **说明：**本类在`PromptModel`的基础上加入了一个用于分类的头部，这个头部会通过Verbalizer，将输出映射到类别上
 
 **1）初始化参数**
+
+|      |      |
+| ---- | ---- |
+|      |      |
+|      |      |
+|      |      |
 
 
 
@@ -195,5 +201,3 @@ Base Class部分给出的是prompt learning架构的基础。
 | **modify_plm**                    | （仅当T5模型的时候要modify）                                 |
 
 (未整理完毕)
-
-牛逼你要比！
