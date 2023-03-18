@@ -383,7 +383,67 @@ Base Class部分给出的是prompt learning架构的基础。
 | **project()**                   |                                                              |
 | **aggregate()**                 |                                                              |
 
-**一些问题**：当label word set中词语数量变化的时候，需要观察`Knowledgeable`类中的project函数的变化，对应知识库中单词的使用情况
+**一些问题**：当label word set中词语数量变化的时候，需要观察`Knowledgeable`类中的project函数的变化，对应知识库中单词的使用情况（暂时理解成是维度的扩展）
+
+```python
+def process_logits(self, logits: torch.Tensor, **kwargs):
+        r"""A whole framework to process the original logits over the vocabulary, which contains four steps:
+
+        (1) Project the logits into logits of label words
+
+        if self.post_log_softmax is True:
+
+            (2) Normalize over all label words
+
+            (3) Calibrate (optional)
+
+        (4) Aggregate (for multiple label words)
+
+        Args:
+            logits (:obj:`torch.Tensor`): The original logits.
+
+        Returns:
+            (:obj:`torch.Tensor`): The final processed logits over the labels (classes).
+        """
+        # project
+        # print("Process call!")
+        label_words_logits = self.project(logits, **kwargs)  #Output: (batch_size, num_classes) or  (batch_size, num_classes, num_label_words_per_label)
+
+
+        if self.post_log_softmax:
+            # normalize
+            label_words_probs = self.normalize(label_words_logits)
+
+            # calibrate
+            if  hasattr(self, "_calibrate_logits") and self._calibrate_logits is not None:
+                label_words_probs = self.calibrate(label_words_probs=label_words_probs)
+
+            # convert to logits
+            label_words_logits = torch.log(label_words_probs+1e-15)
+
+        # aggregate
+        label_logits = self.aggregate(label_words_logits)
+        return label_logits
+    
+    def aggregate(self, label_words_logits: torch.Tensor) -> torch.Tensor:
+        r"""Use weight to aggregate the logits of label words.
+
+        Args:
+            label_words_logits(:obj:`torch.Tensor`): The logits of the label words.
+
+        Returns:
+            :obj:`torch.Tensor`: The aggregated logits from the label words.
+        """
+        # 将label_words的概率整合成label的概率
+        label_words_logits = (label_words_logits * self.label_words_mask).sum(-1)/self.label_words_mask.sum(-1)
+        return label_words_logits
+```
+
+假设最长词语的长度是n，
+
+label_words_logits的维度就是[a,b,n]
+
+而需要求到的label_logits的维度就是[a,b]，即应用到的Knowledge base的信息需要被提取出来了。
 
 #### 4.5 PTR Verbalizer
 
