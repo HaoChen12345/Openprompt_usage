@@ -383,7 +383,7 @@ Base Class部分给出的是prompt learning架构的基础。
 | **project()**                   |                                                              |
 | **aggregate()**                 |                                                              |
 
-
+**一些问题**：当label word set中词语数量变化的时候，需要观察`Knowledgeable`类中的project函数的变化，对应知识库中单词的使用情况
 
 #### 4.5 PTR Verbalizer
 
