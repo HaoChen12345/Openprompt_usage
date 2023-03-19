@@ -445,6 +445,8 @@ label_words_logits的维度就是[a,b,n]
 
 而需要求到的label_logits的维度就是[a,b]，即应用到的Knowledge base的信息需要被提取出来了。
 
+**校准开关启动时，模型的反向传播出错**
+
 #### 4.5 PTR Verbalizer
 
 ##### ① `PTRVerbalizer`
